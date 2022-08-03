@@ -2,7 +2,7 @@
  * Title: Environments
  * Description: Handle all Environments related things
  * Author: Kowshar Robin
- * Date: 2/08/2022
+ * Date: 3/08/2022
  *
  */
 
@@ -14,10 +14,12 @@ const environments = {};
 environments.staging = {
   port: 3000,
   envName: 'staging',
+  secretKey: 'asldiukfsuhunasldfnb',
 };
 environments.production = {
   port: 5000,
   envName: 'production',
+  secretKey: 'ltokgjherkjsbffsad',
 };
 
 // determine which environment was passed
