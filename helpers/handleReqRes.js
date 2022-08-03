@@ -2,13 +2,15 @@
  * Title: handle Request and Response
  * Description: handle Request and Response
  * Author: Kowshar Robin
- *Date: 1/08/2022
+ *Date: 2/08/2022
  *
  */
 
 //Dependencies
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
+const routes = require('../routes');
+const { notFoundHandler } = require('../handlers/notFoundHandler');
 
 //module scaffolding
 const handler = {};
@@ -24,9 +26,35 @@ handler.handleReqRes = (req, res) => {
   const queryStringObject = parsedUrl.query;
   const headerObject = req.headers;
 
+  const requestProperties = {
+    parsedUrl,
+    path,
+    trimmedPath,
+    method,
+    queryStringObject,
+    headerObject,
+  };
+
   //Decoding body data with core decoder
   const decoder = new StringDecoder('utf-8'); //to decode body data to real data
   let realData = '';
+
+  const chosenHandler = routes[trimmedPath]
+    ? routes[trimmedPath]
+    : notFoundHandler;
+
+  chosenHandler(requestProperties, (statusCode, payload) => {
+    statusCode = typeof statusCode === 'number' ? statusCode : 500;
+    payload = typeof payload === 'object' ? payload : {};
+
+    // parsing the payload to json
+    const payloadString = JSON.stringify(payload);
+
+    //return the final response
+    res.writeHead(statusCode);
+    res.end(payloadString);
+  });
+
   req.on('data', (Buffer) => {
     realData += decoder.write(Buffer);
   });
