@@ -22,10 +22,11 @@ handler.handleReqRes = (req, res) => {
   // get url and parse it
   const parsedUrl = url.parse(req.url, true);
   const path = parsedUrl.path;
-  const trimmedPath = path.replace(/^\/+|\/+$/g, ''); //Regular expression to remove slash(/) from before or after path
+  const trimmedPath = path.replace(/^\/+|\/+$/g, '').split('?')[0]; //Regular expression to remove slash(/) from before or after path
   const method = req.method.toLowerCase();
   const queryStringObject = parsedUrl.query;
   const headerObject = req.headers;
+  // console.log(queryStringObject.phone, trimmedPath);
 
   const requestProperties = {
     parsedUrl,
