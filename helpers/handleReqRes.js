@@ -26,8 +26,6 @@ handler.handleReqRes = (req, res) => {
   const method = req.method.toLowerCase();
   const queryStringObject = parsedUrl.query;
   const headerObject = req.headers;
-  // console.log(queryStringObject.phone, trimmedPath);
-
   const requestProperties = {
     parsedUrl,
     path,

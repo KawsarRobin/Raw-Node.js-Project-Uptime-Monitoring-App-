@@ -10,6 +10,7 @@
 const data = require('../../lib/data');
 const { hash } = require('../../helpers/utilities');
 const { parseJSON } = require('../../helpers/utilities');
+const tokenHandler = require('./tokenHandler');
 
 //  module scaffolding
 const handler = {};
@@ -98,15 +99,29 @@ handler._users.get = (requestProperties, callback) => {
       ? requestProperties.queryStringObject.phone
       : false;
   if (phone) {
-    // lookup the user
-    data.read('users', phone, (userData, err) => {
-      const user = { ...parseJSON(userData) };
-      if (!err && user) {
-        delete user.password;
-        callback(200, user);
+    //verify Token
+    let token =
+      typeof requestProperties.headerObject.token === 'string'
+        ? requestProperties.headerObject.token
+        : false;
+
+    tokenHandler._token.verify(token, phone, (tokenId) => {
+      if (tokenId) {
+        // lookup the user
+        data.read('users', phone, (userData, err) => {
+          const user = { ...parseJSON(userData) };
+          if (!err && user) {
+            delete user.password;
+            callback(200, user);
+          } else {
+            callback(404, {
+              error: 'Requested user was not founded in Data!',
+            });
+          }
+        });
       } else {
-        callback(404, {
-          error: 'Requested user was not founded in Data!',
+        callback(403, {
+          error: 'Authentication failed!',
         });
       }
     });
@@ -141,47 +156,53 @@ handler._users.put = (requestProperties, callback) => {
     requestProperties.body.password.trim().length > 0
       ? requestProperties.body.password
       : false;
-  // console.log(requestProperties.body);
-  // console.log(firstName, lastName, password, phone);
 
   if (phone) {
     if (firstName || lastName || password) {
-      console.log(firstName, lastName, password);
-      // Look the user is exist in DB
-      data.read('users', phone, (uData, err) => {
-        const userData = { ...parseJSON(uData) };
-        if (!err && userData) {
-          if (firstName) {
-            userData.firstName = firstName;
-          }
-          if (lastName) {
-            userData.lastName = lastName;
-          }
-          if (password) {
-            userData.password = hash(password);
-          }
+      //verify Token
+      let token =
+        typeof requestProperties.headerObject.token === 'string'
+          ? requestProperties.headerObject.token
+          : false;
+      tokenHandler._token.verify(token, phone, (tokenId) => {
+        if (tokenId) {
+          // Look the user is exist in DB
+          data.read('users', phone, (uData, err) => {
+            const userData = { ...parseJSON(uData) };
+            if (!err && userData) {
+              if (firstName) {
+                userData.firstName = firstName;
+              }
+              if (lastName) {
+                userData.lastName = lastName;
+              }
+              if (password) {
+                userData.password = hash(password);
+              }
 
-          //store to database
-          data.update('users', phone, userData, (err) => {
-            if (!err) {
-              callback(200, {
-                message: 'user updated successfully',
+              //store to database
+              data.update('users', phone, userData, (err) => {
+                if (!err) {
+                  callback(200, {
+                    message: 'user updated successfully',
+                  });
+                } else {
+                  callback(500, {
+                    error: 'There was an error on server side',
+                  });
+                }
               });
             } else {
-              callback(500, {
-                error: 'There was an error on server side',
+              callback(400, {
+                error: 'You have a problem in your request man',
               });
             }
           });
         } else {
-          callback(400, {
-            error: 'You have a problem in your request man',
+          callback(403, {
+            error: 'Authentication failed!',
           });
         }
-      });
-    } else {
-      callback(400, {
-        error: 'You have a problem in your request bro',
       });
     }
   } else {
@@ -192,30 +213,44 @@ handler._users.put = (requestProperties, callback) => {
 };
 
 handler._users.delete = (requestProperties, callback) => {
+  //check phone if valid
   const phone =
     typeof requestProperties.queryStringObject.phone === 'string' &&
     requestProperties.queryStringObject.phone.trim().length === 11
       ? requestProperties.queryStringObject.phone
       : false;
   if (phone) {
-    data.read('users', phone, (userData, err) => {
-      console.log(err, userData);
-      if (!err && userData) {
-        data.delete('users', phone, (err) => {
-          if (!err) {
-            callback(200, {
-              message: 'User was successfully deleted',
+    //verify Token
+    let token =
+      typeof requestProperties.headerObject.token === 'string'
+        ? requestProperties.headerObject.token
+        : false;
+
+    tokenHandler._token.verify(token, phone, (tokenId) => {
+      if (tokenId) {
+        data.read('users', phone, (userData, err) => {
+          if (!err && userData) {
+            data.delete('users', phone, (err) => {
+              if (!err) {
+                callback(200, {
+                  message: 'User was successfully deleted',
+                });
+              } else {
+                callback(500, {
+                  error: 'There was error deleting user',
+                });
+              }
             });
-          } else {
+          } else
             callback(500, {
-              error: 'There was error deleting user',
+              error: 'There was a server side error',
             });
-          }
         });
-      } else
-        callback(500, {
-          error: 'There was a server side error',
+      } else {
+        callback(403, {
+          error: 'Authentication failed!',
         });
+      }
     });
   } else {
     callback(400, {
