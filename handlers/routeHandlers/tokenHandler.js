@@ -163,7 +163,7 @@ handler._token.delete = (requestProperties, callback) => {
         });
       } else
         callback(500, {
-          error: 'There was a server side error',
+          error: 'There was a server side error bro',
         });
     });
   } else {

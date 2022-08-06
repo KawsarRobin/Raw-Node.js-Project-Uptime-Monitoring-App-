@@ -16,7 +16,6 @@ const utilities = {};
 //parse JSON string to object
 utilities.parseJSON = (jsonString) => {
   let output;
-
   try {
     output = JSON.parse(jsonString);
   } catch {
@@ -42,7 +41,6 @@ utilities.hash = (str) => {
 utilities.createRandomString = (strLength) => {
   let length = strLength;
   length = typeof strLength === 'number' && strLength > 0 ? strLength : false;
-
   if (length) {
     let possibleCharacters = 'abcdefghijklmnopqrstuvwxyz1234567890';
     let output = '';
