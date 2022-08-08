@@ -8,7 +8,6 @@
 
 //dependencies
 const data = require('../../lib/data');
-const { hash } = require('../../helpers/utilities');
 const { parseJSON, createRandomString } = require('../../helpers/utilities');
 const tokenHandler = require('./tokenHandler');
 const { maxChecks } = require('../../helpers/environments');

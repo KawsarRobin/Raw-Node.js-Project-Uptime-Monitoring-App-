@@ -7,10 +7,10 @@
  */
 
 // dependencies
-
-//module scaffolding
 const crypto = require('crypto');
 const environments = require('./environments');
+
+//module scaffolding
 const utilities = {};
 
 //parse JSON string to object

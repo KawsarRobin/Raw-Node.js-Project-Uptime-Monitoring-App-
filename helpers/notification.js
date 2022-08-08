@@ -9,7 +9,6 @@
 //dependencies
 const https = require('https');
 const { twilio } = require('./environments');
-const querystring = require('querystring');
 
 //Module scaffolding
 const notification = {};

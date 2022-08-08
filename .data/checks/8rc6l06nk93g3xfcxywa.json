@@ -1,1 +1,1 @@
-{"id":"8rc6l06nk93g3xfcxywa","userPhone":"01610989169","protocol":"https","url":"google.com","method":"GET","successCodes":[200,201],"timeoutSeconds":3}
+{"id":"8rc6l06nk93g3xfcxywa","userPhone":"01610989169","protocol":"https","url":"google.com","method":"GET","successCodes":[200,201,301],"timeoutSeconds":3,"state":"up","lastChecked":1659938625928}

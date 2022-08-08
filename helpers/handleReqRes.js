@@ -21,8 +21,8 @@ handler.handleReqRes = (req, res) => {
   //Request handling
   // get url and parse it
   const parsedUrl = url.parse(req.url, true);
-  const path = parsedUrl.path;
-  const trimmedPath = path.replace(/^\/+|\/+$/g, '').split('?')[0]; //Regular expression to remove slash(/) from before or after path
+  const path = parsedUrl.pathname;
+  const trimmedPath = path.replace(/^\/+|\/+$/g, '');
   const method = req.method.toLowerCase();
   const queryStringObject = parsedUrl.query;
   const headerObject = req.headers;
@@ -63,8 +63,6 @@ handler.handleReqRes = (req, res) => {
       res.writeHead(statusCode);
       res.end(payloadString);
     });
-    // // response handle
-    // res.end('hello world, Robin Here');
   });
 };
 
